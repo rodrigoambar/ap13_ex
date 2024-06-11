@@ -15,30 +15,57 @@ CREATE TABLE tb_aluno(
 -- para dizer qual o percentual de cada nota (variável grade) obtida por estudantes daquele
 -- sexo.
 
---1.4,1
-CREATE OR REPLACE PROCEDURE sp_maior_de_idade(
-	 OUT cont INT
+--1.4.1
+-- CREATE OR REPLACE PROCEDURE sp_maior_de_idade(
+-- 	 OUT cont INT
+-- ) LANGUAGE plpgsql
+-- AS $$
+-- BEGIN
+-- 	SELECT COUNT(*)
+-- 	INTO cont
+-- 	FROM tb_aluno
+-- 	WHERE Age >= 1;
+-- END;
+-- $$
+
+-- DO $$
+-- DECLARE
+-- cont INT;
+-- BEGIN
+-- 	CALL sp_maior_de_idade(cont);
+-- 	RAISE NOTICE 'o número de alunos maiores de idade são : %', cont;
+-- END;
+-- $$
+		
+DROP PROCEDURE sp_cont_genero;
+
+--1.4.2
+CREATE OR REPLACE PROCEDURE sp_cont_genero(
+	OUT masc DECIMAL(10,2),
+	OUT fem  DECIMAL(10,2)
 ) LANGUAGE plpgsql
 AS $$
 BEGIN
 	SELECT COUNT(*)
-	INTO cont
+	INTO masc
 	FROM tb_aluno
-	WHERE Age > 1;
-END;
+	WHERE Gender = 2;
+	SELECT COUNT(*)
+	INTO fem
+	FROM tb_aluno
+	WHERE Gender = 1;
+	masc := (masc / 146) * 100;
+	fem := (fem / 146) * 100;
+	END; 
 $$
-
+	
 DO $$
 DECLARE
-cont INT;
+	 masc DECIMAL(10,2);
+	 fem  DECIMAL(10,2);
 BEGIN
-	CALL sp_maior_de_idade(cont);
-	RAISE NOTICE 'o número de alunos maiores de idade são : %', cont;
+	CALL sp_cont_genero(fem, masc);
+	RAISE NOTICE 'o percentual femenino é % e o masculino %', fem, masc;
 END;
 $$
-		
-
-
-
-
 
