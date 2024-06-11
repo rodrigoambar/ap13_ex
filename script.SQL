@@ -69,3 +69,105 @@ BEGIN
 END;
 $$
 
+-- 1.4.3 Recebe um sexo como parâmetro em modo IN e utiliza oito parâmetros em modo OUT
+-- para dizer qual o percentual de cada nota (variável grade) obtida por estudantes daquele
+-- sexo.
+-- 0: Fail, 1: DD, 2: DC, 3: CC, 4: CB, 5: BB, 6: BA, 7: AA)
+
+CREATE OR REPLACE PROCEDURE sp_nota(
+    IN genero INT,
+    OUT Fail NUMERIC(10,2),
+    OUT DD NUMERIC(10,2),
+    OUT DC NUMERIC(10,2),
+    OUT CC NUMERIC(10,2),
+    OUT CB NUMERIC(10,2),
+    OUT BB NUMERIC(10,2),
+    OUT BA NUMERIC(10,2),
+    OUT AA NUMERIC(10,2)
+) LANGUAGE plpgsql
+AS $$
+DECLARE
+BEGIN	
+        SELECT COUNT(*)
+		INTO Fail
+		FROM tb_aluno
+	    WHERE grade = 0 and Gender = genero;
+		Fail := (Fail / 146) * 100; 
+		SELECT COUNT (*) 
+		INTO DD
+		FROM tb_aluno
+		WHERE grade = 1 and tb_aluno.Gender = genero;
+			DD := (DD /146) * 100;
+		SELECT COUNT (*) 
+		INTO DC
+		FROM tb_aluno
+		WHERE grade = 2 and tb_aluno.Gender = genero;
+			DC := (DC / 146) * 100;
+		SELECT COUNT (*) 
+		INTO CC
+		FROM tb_aluno
+		WHERE grade = 3 and tb_aluno.Gender = genero;
+			CC := (CC /146) * 100;
+		SELECT COUNT (*) 
+		INTO CB
+		FROM tb_aluno
+		WHERE grade = 4 and tb_aluno.Gender = genero;
+			CB := (CB /146) * 100;
+		SELECT COUNT (*) 
+		INTO BB
+		FROM tb_aluno
+		WHERE grade = 5 and tb_aluno.Gender = genero;
+			BB := (BB / 146) * 100;
+		SELECT COUNT (*) 
+		INTO BA
+		FROM tb_aluno
+		WHERE grade = 6 and tb_aluno.Gender = genero;
+			BA := (BA /146) * 100;
+		SELECT COUNT (*) 
+		INTO AA
+		FROM tb_aluno
+		WHERE grade = 7 and tb_aluno.Gender = genero;
+			AA := (AA / 146) * 100;
+END;
+$$
+
+DO $$
+DECLARE
+	genero INT;
+    Fail NUMERIC(10,2);
+    DD NUMERIC(10,2);
+    DC NUMERIC(10,2);
+    CC NUMERIC(10,2);
+    CB NUMERIC(10,2);
+    BB NUMERIC(10,2);
+    BA NUMERIC(10,2);
+    AA NUMERIC(10,2);
+BEGIN
+    CALL sp_nota(1, Fail, DD, DC, CC, CB, BB, BA, AA);
+	IF genero = 1 THEN
+    	RAISE NOTICE 'Percentual de notas para alunos do sexo masculino:';
+    	RAISE NOTICE 'Fail: %', Fail;
+    	RAISE NOTICE 'DD: %', DD;
+    	RAISE NOTICE 'DC: %', DC;
+    	RAISE NOTICE 'CC: %', CC;
+    	RAISE NOTICE 'CB: %', CB;
+    	RAISE NOTICE 'BB: %', BB;
+    	RAISE NOTICE 'BA: %', BA;
+    	RAISE NOTICE 'AA: %', AA;
+	ELSE
+		RAISE NOTICE 'Percentual de notas para alunos do sexo feminino:';
+    	RAISE NOTICE 'Fail: %', Fail;
+    	RAISE NOTICE 'DD: %', DD;
+    	RAISE NOTICE 'DC: %', DC;
+    	RAISE NOTICE 'CC: %', CC;
+    	RAISE NOTICE 'CB: %', CB;
+    	RAISE NOTICE 'BB: %', BB;
+    	RAISE NOTICE 'BA: %', BA;
+    	RAISE NOTICE 'AA: %', AA;
+	END IF;
+END $$;
+
+
+
+
+	
