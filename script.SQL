@@ -193,5 +193,45 @@ BEGIN
 END $$;
 END;
 
+-- 1.5.2 Responde (devolve boolean) se é verdade que, entre os estudantes que fazem
+-- anotações pelo menos algumas vezes durante as aulas, pelo menos 70% são aprovados
+-- (grade > 0).
+CREATE OR REPLACE FUNCTION sp_anotacao() RETURNS BOOLEAN 
+AS $$
+DECLARE
+	total_anotadores NUMERIC(10,2);
+	anotadores_aprovados NUMERIC(10,2);
+	porcentagem_aprovados NUMERIC(10,2);
+BEGIN
+	SELECT COUNT(*) INTO total_anotadores
+	FROM tb_aluno
+	WHERE notes >= 2;
+	
+	SELECT COUNT(*) INTO anotadores_aprovados
+	FROM tb_aluno
+	WHERE notes >= 2 and grade > 0;
+	
+	IF anotadores_aprovados = 0 THEN
+		porcentagem_aprovados := 0;
+	ELSE 
+		porcentagem_aprovados := (anotadores_aprovados / total_anotadores);
+	END IF;
+	
+	RETURN porcentagem_aprovados > 0.7;
+END;
+$$ LANGUAGE plpgsql;
+
+DO $$
+DECLARE
+    result BOOLEAN;
+BEGIN
+    result := sp_anotacao();
+    IF result THEN
+        RAISE NOTICE 'Pelo menos 70%% dos estudantes que fazem anotações são aprovados.';
+    ELSE
+        RAISE NOTICE 'Menos de 70%% dos estudantes que fazem anotações são aprovados.';
+    END IF;
+END;
+$$
 
 	
