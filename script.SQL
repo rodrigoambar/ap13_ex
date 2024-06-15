@@ -234,4 +234,38 @@ BEGIN
 END;
 $$
 
+-- Devolve o percentual de alunos que se preparam pelo menos um pouco para os
+-- “midterm exams” e que são aprovados (grade > 0).
+CREATE OR REPLACE FUNCTION sp_preparados() RETURNS NUMERIC(10,2)
+AS $$
+DECLARE
+	total_preparados NUMERIC(10,2);
+	preparados_aprovados NUMERIC(10,2);
+	porcentagem_aprovados NUMERIC(10,2);
+BEGIN
+	SELECT COUNT(*) INTO total_preparados
+	FROM tb_aluno
+	WHERE Prep_exam = 1;
 	
+	SELECT COUNT(*) INTO preparados_aprovados
+	FROM tb_aluno
+	WHERE Prep_exam = 1 and grade > 0;
+	
+	IF preparados_aprovados = 0 THEN
+		porcentagem_aprovados := 0;
+	ELSE 
+		porcentagem_aprovados := (preparados_aprovados / total_preparados);
+	END IF;
+	
+	RETURN porcentagem_aprovados;
+END;
+$$ LANGUAGE plpgsql;
+
+DO $$
+DECLARE
+    percentual NUMERIC(10,2);
+BEGIN
+    percentual := sp_preparados();
+    RAISE NOTICE 'o percentual de alunos que se preparam ao menos um pouco para os midterms exams é de: %', percentual;
+END;
+$$
