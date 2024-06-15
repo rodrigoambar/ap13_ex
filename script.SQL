@@ -146,28 +146,52 @@ BEGIN
     CALL sp_nota(1, Fail, DD, DC, CC, CB, BB, BA, AA);
 	IF genero = 1 THEN
     	RAISE NOTICE 'Percentual de notas para alunos do sexo masculino:';
-    	RAISE NOTICE 'Fail: %', Fail;
-    	RAISE NOTICE 'DD: %', DD;
-    	RAISE NOTICE 'DC: %', DC;
-    	RAISE NOTICE 'CC: %', CC;
-    	RAISE NOTICE 'CB: %', CB;
-    	RAISE NOTICE 'BB: %', BB;
-    	RAISE NOTICE 'BA: %', BA;
-    	RAISE NOTICE 'AA: %', AA;
+
 	ELSE
 		RAISE NOTICE 'Percentual de notas para alunos do sexo feminino:';
-    	RAISE NOTICE 'Fail: %', Fail;
-    	RAISE NOTICE 'DD: %', DD;
-    	RAISE NOTICE 'DC: %', DC;
-    	RAISE NOTICE 'CC: %', CC;
-    	RAISE NOTICE 'CB: %', CB;
-    	RAISE NOTICE 'BB: %', BB;
-    	RAISE NOTICE 'BA: %', BA;
-    	RAISE NOTICE 'AA: %', AA;
 	END IF;
+	
+	RAISE NOTICE 'Fail: %', Fail;
+    RAISE NOTICE 'DD: %', DD;
+    RAISE NOTICE 'DC: %', DC;
+    RAISE NOTICE 'CC: %', CC;
+    RAISE NOTICE 'CB: %', CB;
+    RAISE NOTICE 'BB: %', BB;
+    RAISE NOTICE 'BA: %', BA;
+    RAISE NOTICE 'AA: %', AA;
 END $$;
 
 
+-- 1.5 Escreva as seguintes functions (incluindo um bloco anônimo de teste para cada uma):
+-- 1.5.1 Responde (devolve boolean) se é verdade que todos os estudantes de renda acima de
+-- 410 são aprovados (grade > 0).
+CREATE OR REPLACE FUNCTION sp_renda() RETURNS BOOLEAN 
+AS $$
+DECLARE
+	resultado BOOLEAN;
+BEGIN
+	SELECT NOT EXISTS (
+	SELECT 1
+	FROM tb_aluno
+	WHERE Salary = 5 and grade = 0
+	) INTO resultado;
+	
+	RETURN resultado;
+END;
+$$ LANGUAGE plpgsql;
+
+DO $$
+DECLARE 
+	renda_aprovada BOOLEAN;
+BEGIN
+  renda_aprovada := sp_renda();
+  IF renda_aprovada THEN
+        RAISE NOTICE 'Todos os estudantes com renda acima de 410 são aprovados.';
+    ELSE
+        RAISE NOTICE 'Nem todos os estudantes com renda acima de 410 são aprovados.';
+    END IF;
+END $$;
+END;
 
 
 	
